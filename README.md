@@ -103,7 +103,7 @@ put -r html
 
 ```
 sudo mkdir -p ../../var/www/
-sudo mv html /var/www/
+sudo mv html/index.html /var/www/
 sudo mv src /var/www/
 ```
 
