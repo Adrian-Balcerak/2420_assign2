@@ -55,7 +55,7 @@ volta install node
     <title>Document</title>
 </head>
 <body>
-    <b>Welcome to my home page.</b>
+    <b>Server 1/2</b>
 </body>
 </html>
 ```
@@ -75,14 +75,14 @@ index.js:
 const fastify = require('fastify')({ logger: true })
 
 // Declare a route
-fastify.get('/', async (request, reply) => {
-  return { hello: 'Server x' }
+fastify.get('/api', async (request, reply) => {
+  return { hello: 'Server 1/2' }
 })
 
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen({ port: 3000 })
+    await fastify.listen({ port: 3030 })
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
@@ -118,8 +118,8 @@ sudo vim /etc/caddy/Caddyfile
 
 ```
 http://143.244.208.55 {
-    root */var/www/html
-    reverse_proxy localhost:3000
+    root * /var/www
+    reverse_proxy /api localhost:3030
     file_server
 }
 ```
@@ -168,7 +168,46 @@ WantedBy=multi-user.target
 3. start the service
 
 * sudo systemctl start hello_app.service
+* sudo systemctl enable hello_app.service
 
-### Run Them
+4. create a caddy group and user:
 
-* sudo caddy run --config /etc/caddy/Caddyfile
+* sudo groupadd --system caddy
+* sudo useradd --system \
+    --gid caddy \
+    --create-home \
+    --home-dir /var/lib/caddy \
+    --shell /usr/sbin/nologin \
+    --comment "Caddy web server" \
+    caddy
+    
+5. give caddy ownership over the files it needs to host
+
+* sudo chown caddy:caddy /var/www
+* sudo chown caddy:caddy /var/www/html
+* sudo chown caddy:caddy /var/www/src
+* sudo chown caddy:caddy /var/www/html/index.html
+* sudo chown caddy:caddy /var/www/src/index.js
+
+6. Install and start the caddy service
+
+* sudo sh -c 'curl https://raw.githubusercontent.com/caddyserver/dist/master/init/caddy.service > /etc/systemd/system/caddy.service'
+* systemctl -daemon-reload
+* sudo systemctl start caddy
+* sudo systemctl enable caddy
+
+
+## Step 9
+
+1. Makes some differences between the html files.
+2. Run both servers and observe the differences.
+
+Server can be observed here http://143.244.208.55/
+
+![server1h1](./images/server1h1.png)
+
+![server2h1](./images/server2h1.png)
+
+![server1](./images/server1.png)
+
+![server2](./images/server2.png)
