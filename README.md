@@ -99,6 +99,14 @@ put -r src
 put -r html
 ```
 
+6. move the html and src directories
+
+```
+sudo mkdir -p ../../var/www/
+sudo mv html /var/www/
+sudo mv src /var/www/
+```
+
 ## Step 5
 ### Create a Caddy config file on each droplet
 
@@ -109,6 +117,58 @@ sudo vim /etc/caddy/Caddyfile
 ```
 
 ```
-
+http://143.244.208.55 {
+    root */var/www/html
+    reverse_proxy localhost:3000
+    file_server
+}
 ```
 
+## Step 6
+### Install node and npm with volta on each droplet
+
+```
+curl https://get.volta.sh | bash
+source ~/.bashrc
+volta install node
+```
+
+## Step 7
+### Create a service file on host machine
+
+touch hello_app.service
+vim hello_app.service
+
+```
+[Unit]
+Description=runs a hello world webapp
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/home/johnny/.volta/bin/node /var/www/src/index.js
+User=johnny
+Group=johnny
+Restart=always
+RestartSec=10
+TimeoutStopSec=90
+SyslogIdentifier=hello_app
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## Step 8
+
+1. sftp the service file to both servers
+2. move the service file to the correct location
+
+* sudo mv hello_app.service /etc/systemd/system
+
+3. start the service
+
+* sudo systemctl start hello_app.service
+
+### Run Them
+
+* sudo caddy run --config /etc/caddy/Caddyfile
