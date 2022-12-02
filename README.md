@@ -184,9 +184,8 @@ WantedBy=multi-user.target
 5. give caddy ownership over the files it needs to host
 
 * sudo chown caddy:caddy /var/www
-* sudo chown caddy:caddy /var/www/html
 * sudo chown caddy:caddy /var/www/src
-* sudo chown caddy:caddy /var/www/html/index.html
+* sudo chown caddy:caddy /var/www/index.html
 * sudo chown caddy:caddy /var/www/src/index.js
 
 6. Install and start the caddy service
