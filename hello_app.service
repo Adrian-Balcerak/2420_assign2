@@ -1,0 +1,16 @@
+[Unit]
+Description=runs a hello world webapp
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/home/johnny/.volta/bin/node /var/www/src/index.js
+User=johnny
+Group=johnny
+Restart=always
+RestartSec=10
+TimeoutStopSec=90
+SyslogIdentifier=hello_app
+
+[Install]
+WantedBy=multi-user.target
